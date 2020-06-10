@@ -23,8 +23,9 @@
 # Alan Aguiar <alanjas@gmail.com>
 
 import sys
-import gtk
-import pygame
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtkimport pygame
 import random
 from pygame.locals import Rect
 from grid import Grid
@@ -139,8 +140,8 @@ class State(object):
             f.write(str(self.high_score) + "\n")
             f.write(str(self.time) + "\n")
             f.close()
-        except Exception, err:
-            print 'Error saving scores', err
+        except Exception as err:
+            print ('Error saving scores', err)
 
     def update(self,lives=None,score=None,time=None):
         """update lives, score and time"""
@@ -559,7 +560,7 @@ class KukuActivity():
                 #print question_file
                 question_list = qfIO.Read_questions(data_path(question_file))
             except question.ParseError:
-                print 'Problem parsing file, using random questions.'
+                print ('Problem parsing file, using random questions.')
                 qs = []
                 for j in range(100):
                     q = (random.randint(0,9),
@@ -584,8 +585,8 @@ class KukuActivity():
         pygame.display.update()
         while True:
             # Pump GTK messages.
-            while gtk.events_pending():
-                gtk.main_iteration()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
             events = pygame.event.get()
             for evt in events:
                 if evt.type == pygame.QUIT:
@@ -607,8 +608,8 @@ class KukuActivity():
         # print 'win!!', state
         while True:
             # Pump GTK messages.
-            while gtk.events_pending():
-                gtk.main_iteration()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
             events = pygame.event.get()
             for evt in events:
                 if evt.type == pygame.QUIT:
@@ -646,8 +647,8 @@ class KukuActivity():
 
             while True:
                 # Pump GTK messages.
-                while gtk.events_pending():
-                    gtk.main_iteration()
+                while Gtk.events_pending():
+                    Gtk.main_iteration()
                 events = pygame.event.get()
                 for evt in events:
                     if evt.type == pygame.QUIT:
@@ -697,12 +698,12 @@ class KukuActivity():
         return (qa,num_players,score,time_clock)
 
     def save_state(self, PLAYER_LIVES, GAME_TIME):
-        print 'Saving state...'
+        print ('Saving state...')
         #self.state.score = 0
         self.state.lives = PLAYER_LIVES
         self.state.time  = GAME_TIME
         self.state.save()
-        print 'State saved'
+        print ('State saved')
 
 
     def load_state(self):
@@ -714,8 +715,8 @@ class KukuActivity():
             self.state.high_score = int(f.readline())
             self.state.time = int(f.readline())
             f.close()
-        except Exception, err:
-            print 'Cannot open kuku_state.obj', err
+        except Exception as err:
+            print ('Cannot open kuku_state.obj', err)
 
 
     def run(self):
@@ -826,8 +827,8 @@ class KukuActivity():
 
         while running:
             # Pump GTK messages.
-            while gtk.events_pending():
-                gtk.main_iteration()
+            while Gtk.events_pending():
+                Gtk.main_iteration()
             delta = clock.tick(25)
             time += delta
             if time > 1000:
