@@ -24,8 +24,8 @@ class PygameCanvas(Gtk.EventBox):
         
         self._mainwindow = mainwindow
 
-        self.set_flags(Gtk.CAN_FOCUS)
-        
+        self.set_can_focus(True)
+                
         self._socket = Gtk.Socket()
         self.add(self._socket)
 
