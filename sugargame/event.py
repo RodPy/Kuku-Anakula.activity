@@ -39,7 +39,7 @@ class Translator(object):
         pygame.K_RSHIFT: pygame.KMOD_RSHIFT,
     }
     
-    def __init__(self, mainwindow, inner_evb):
+    def __init__(self, activity, inner_evb):
         """Initialise the Translator with the windows to which to listen"""
         self._activity = activity
         self._inner_evb = inner_evb
