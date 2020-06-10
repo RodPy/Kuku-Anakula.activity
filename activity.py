@@ -42,7 +42,7 @@ class Activity(activity.Activity):
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
         self.game = kuku.KukuActivity(self)
-#        self.build_toolbar()
+        self.build_toolbar()
         self.game.canvas = sugargame.canvas.PygameCanvas(
             self, main=self.game.run, modules=[
                 pygame.display, pygame.font, pygame.mixer])
@@ -70,10 +70,9 @@ class Activity(activity.Activity):
         barra.insert(stop_button, -1)
         stop_button.show()
 
+        toolbox.show()
         self.set_toolbar_box(toolbox)
-
-        toolbox.show_all()
-
+        self.show_all()
 
     def read_file(self, file_path):
         pass
