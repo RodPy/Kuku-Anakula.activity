@@ -311,7 +311,7 @@ class QuestionFileIO (object) :
 
         #RETURNS a list of Question objects
         try:
-            f = file(file_name,"r")
+            f = open(file_name,"r")
         except IOError:
             raise(FileError)
         
