@@ -25,7 +25,8 @@
 import sys
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtkimport pygame
+from gi.repository import Gtk
+import pygame
 import random
 from pygame.locals import Rect
 from grid import Grid
