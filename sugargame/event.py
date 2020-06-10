@@ -1,7 +1,9 @@
-import gtk
-import gobject
+from gi.repository import Gdk
+from gi.repository import GObject
 import pygame
 import pygame.event
+import logging
+
 
 class _MockEvent(object):
     def __init__(self, keyval):
@@ -163,7 +165,7 @@ class Translator(object):
             # view source request, specially handled...
             self._mainwindow.view_source()
         else:
-            print 'Key %s unrecognized' % key
+            print ('Key %s unrecognized' % key)
             
         if keycode is not None:
             if type == pygame.KEYDOWN:
