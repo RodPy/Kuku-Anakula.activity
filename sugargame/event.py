@@ -48,17 +48,17 @@ class Translator(object):
         # Enable events
         # (add instead of set here because the main window is already realized)
         self._activity.add_events(
-            Gdk.KEY_PRESS_MASK | 
-            Gdk.KEY_RELEASE_MASK | 
-            Gdk.VISIBILITY_NOTIFY_MASK
+            Gdk.EventMask.KEY_PRESS_MASK | 
+            Gdk.EventMask.KEY_RELEASE_MASK | 
+            Gdk.EventMask.VISIBILITY_NOTIFY_MASK
         )
         
         self._inner_evb.set_events(
-            Gdk.POINTER_MOTION_MASK | 
-            Gdk.POINTER_MOTION_HINT_MASK | 
-            Gdk.BUTTON_MOTION_MASK | 
-            Gdk.BUTTON_PRESS_MASK | 
-            Gdk.BUTTON_RELEASE_MASK
+            Gdk.EventMask.POINTER_MOTION_MASK | 
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK | 
+            Gdk.EventMask.BUTTON_MOTION_MASK | 
+            Gdk.EventMask.BUTTON_PRESS_MASK | 
+            Gdk.EventMask.BUTTON_RELEASE_MASK
         )
 
         self._activity.set_can_focus(True)
