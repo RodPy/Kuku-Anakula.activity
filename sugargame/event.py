@@ -72,7 +72,7 @@ class Translator(object):
         self._inner_evb.connect('button_press_event', self._mousedown_cb)
         self._inner_evb.connect('button_release_event', self._mouseup_cb)
         self._inner_evb.connect('motion-notify-event', self._mousemove_cb)
-        self._inner_evb.connect('expose-event', self._expose_cb)
+#gtk2        self._inner_evb.connect('expose-event', self._expose_cb)
         self._inner_evb.connect('configure-event', self._resize_cb)
         self._inner_evb.connect('screen-changed', self._screen_changed_cb)
         
