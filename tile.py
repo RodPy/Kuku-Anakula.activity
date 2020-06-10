@@ -25,7 +25,7 @@
 # Includes class Tile which represents one tile on a grid.
 
 import pygame
-if not pygame.font: print 'Warning, fonts disabled'
+if not pygame.font: print ('Warning, fonts disabled')
 from kuku_utils import load_image
 
 class Tile(object):

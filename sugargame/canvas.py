@@ -1,18 +1,19 @@
 import os
-import gtk
-import gobject
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+from gi.repository import GObject
 import pygame
-import event
-
+import sugargame.event as event
 CANVAS = None
 
-class PygameCanvas(gtk.EventBox):
+class PygameCanvas(Gtk.EventBox):
     
     """
     mainwindow is the activity intself.
     """
     def __init__(self, mainwindow, pointer_hint = True):
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         global CANVAS
         assert CANVAS == None, "Only one PygameCanvas can be created, ever."
@@ -23,9 +24,9 @@ class PygameCanvas(gtk.EventBox):
         
         self._mainwindow = mainwindow
 
-        self.set_flags(gtk.CAN_FOCUS)
-        
-        self._socket = gtk.Socket()
+        self.set_can_focus(True)
+                
+        self._socket = Gtk.Socket()
         self.add(self._socket)
 
         self._initialized = False
@@ -37,7 +38,7 @@ class PygameCanvas(gtk.EventBox):
         # Sugar activity is not properly created until after its constructor returns.
         # If the Pygame main loop is called from the activity constructor, the 
         # constructor never returns and the activity freezes.
-        gobject.idle_add(self._run_pygame_cb, main_fn)
+        GObject.idle_add(self._run_pygame_cb, main_fn)
 
     def _run_pygame_cb(self, main_fn):
         # PygameCanvas.run_pygame can only be called once

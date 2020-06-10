@@ -23,14 +23,17 @@
 # Alan Aguiar <alanjas@gmail.com>
 
 
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
 import sugargame.canvas
-from sugar.activity import activity
+from sugar3.activity import activity
 from gettext import gettext as _
 
-from sugar.graphics.toolbarbox import ToolbarBox
-from sugar.activity.widgets import ActivityToolbarButton
-from sugar.activity.widgets import StopButton
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.activity.widgets import ActivityToolbarButton
+from sugar3.activity.widgets import StopButton
 
 import kuku
 
@@ -54,7 +57,7 @@ class Activity(activity.Activity):
 
         barra = toolbox.toolbar
 
-        separator2 = gtk.SeparatorToolItem()
+        separator2 = Gtk.SeparatorToolItem()
         separator2.props.draw = False
         separator2.set_expand(True)
         barra.insert(separator2, -1)

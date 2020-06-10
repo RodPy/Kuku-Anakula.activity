@@ -37,7 +37,7 @@ def load_image(file, transparent):
     try:
         surface = pygame.image.load(file)
     except pygame.error:
-        raise SystemExit, 'Could not load image "%s" %s'%(file, pygame.get_error())
+        raise SystemExit('Could not load image "%s" %s'%(file, pygame.get_error()))
     if transparent:
         corner = surface.get_at((0, 0))
         surface.set_colorkey(corner, RLEACCEL)
