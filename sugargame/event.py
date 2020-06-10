@@ -253,7 +253,7 @@ class Translator(object):
             pygame.event.post(evt)
         except pygame.error as e:
             if str(e) == 'Event queue full':
-                print "Event queue full!"
+                print ("Event queue full!")
                 pass
             else:
                 raise e
