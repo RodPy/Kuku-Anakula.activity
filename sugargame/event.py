@@ -41,12 +41,12 @@ class Translator(object):
     
     def __init__(self, mainwindow, inner_evb):
         """Initialise the Translator with the windows to which to listen"""
-        self._mainwindow = mainwindow
+        self._activity = activity
         self._inner_evb = inner_evb
 
         # Enable events
         # (add instead of set here because the main window is already realized)
-        self._mainwindow.add_events(
+        self._activity.add_events(
             Gdk.KEY_PRESS_MASK | \
             Gdk.KEY_RELEASE_MASK | \
             Gdk.VISIBILITY_NOTIFY_MASK
@@ -60,12 +60,12 @@ class Translator(object):
             Gdk.BUTTON_RELEASE_MASK
         )
 
-        self._mainwindow.set_flags(Gtk.CAN_FOCUS)
+        self._activity.set_flags(Gtk.CAN_FOCUS)
         self._inner_evb.set_flags(Gtk.CAN_FOCUS)
         
         # Callback functions to link the event systems
-        self._mainwindow.connect('unrealize', self._quit_cb)
-        self._mainwindow.connect('visibility_notify_event', self._visibility_cb)
+        self._activity.connect('unrealize', self._quit_cb)
+        self._activity.connect('visibility_notify_event', self._visibility_cb)
         self._inner_evb.connect('key_press_event', self._keydown_cb)
         self._inner_evb.connect('key_release_event', self._keyup_cb)
         self._inner_evb.connect('button_press_event', self._mousedown_cb)
@@ -163,7 +163,7 @@ class Translator(object):
             keycode = getattr(pygame, 'K_'+key.lower())
         elif key == 'XF86Start':
             # view source request, specially handled...
-            self._mainwindow.view_source()
+            self._activity.view_source()
         else:
             print ('Key %s unrecognized' % key)
             
