@@ -339,7 +339,7 @@ class QuestionFileIO (object) :
         #RETURNS null
 
         try:
-            f = file(file_name,"w+")
+            f = open(file_name,"w+")
         except IOError:
             raise(FileError)
 

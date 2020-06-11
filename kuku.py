@@ -135,7 +135,7 @@ class State(object):
     def save(self):
         """save state object in kuku_state.obj"""
         try:
-            f = file(data_path('kuku_state.obj'), 'w')
+            f = open(data_path('kuku_state.obj'), 'w')
             f.write(str(self.score) + "\n")
             f.write(str(self.lives) + "\n")
             f.write(str(self.high_score) + "\n")
@@ -710,7 +710,7 @@ class KukuActivity():
     def load_state(self):
         self.state = State()
         try:
-            f = file(data_path('kuku_state.obj'),'r')
+            f = open(data_path('kuku_state.obj'),'r')
             self.state.score = int(f.readline())
             self.state.lives = int(f.readline())
             self.state.high_score = int(f.readline())
