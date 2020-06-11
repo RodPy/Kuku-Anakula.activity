@@ -34,6 +34,8 @@ from gettext import gettext as _
 from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.graphics import style
 
 import kuku
 
@@ -50,26 +52,23 @@ class Activity(activity.Activity):
 
     def build_toolbar(self):
 
-        toolbox = ToolbarBox()
+        toolbar_box = ToolbarBox()
+
         activity_button = ActivityToolbarButton(self)
-        toolbox.toolbar.insert(activity_button, -1)
+        toolbar_box.toolbar.insert(activity_button, 0)
         activity_button.show()
 
-        barra = toolbox.toolbar
-
-        separator2 = Gtk.SeparatorToolItem()
-        separator2.props.draw = False
-        separator2.set_expand(True)
-        barra.insert(separator2, -1)
+        separator = Gtk.SeparatorToolItem()
+        separator.props.draw = False
+        separator.set_expand(True)
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
 
         stop_button = StopButton(self)
-        stop_button.props.accelerator = '<Ctrl>q'
-        barra.insert(stop_button, -1)
+        toolbar_box.toolbar.insert(stop_button, -1)
         stop_button.show()
-
-        self.set_toolbar_box(toolbox)
-
-        toolbox.show_all()
+        self.set_toolbar_box(toolbar_box)
+        toolbar_box.show()
 
 
     def read_file(self, file_path):
