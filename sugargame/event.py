@@ -67,20 +67,21 @@ class Translator(object):
         # Callback functions to link the event systems
         self._activity.connect('unrealize', self._quit_cb)
         self._activity.connect('visibility_notify_event', self._visibility_cb)
+
         self._inner_evb.connect('key_press_event', self._keydown_cb)
         self._inner_evb.connect('key_release_event', self._keyup_cb)
         self._inner_evb.connect('button_press_event', self._mousedown_cb)
         self._inner_evb.connect('button_release_event', self._mouseup_cb)
         self._inner_evb.connect('motion-notify-event', self._mousemove_cb)
 #gtk2        self._inner_evb.connect('expose-event', self._expose_cb)
-        self._inner_evb.connect('configure-event', self._resize_cb)
+#gtk2        self._inner_evb.connect('configure-event', self._resize_cb)
         self._inner_evb.connect('screen-changed', self._screen_changed_cb)
         
         # Internal data
         self.__stopped = False
         self.__keystate = [0] * 323
-        self.__button_state = [0,0,0]
-        self.__mouse_pos = (0,0)
+        self.__button_state = [0, 0, 0]
+        self.__mouse_pos = (0, 0)
         self.__repeat = (None, None)
         self.__held = set()
         self.__held_time_left = {}
@@ -94,30 +95,26 @@ class Translator(object):
         pygame.mouse.get_pos = self._get_mouse_pos
 
     def update_display(self):
-        pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
-        
-    def _expose_cb(self, widget, event):
         if pygame.display.get_init():
             pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
-        return True
+        
 
     def _resize_cb(self, widget, event):
-        evt = pygame.event.Event(pygame.VIDEORESIZE, 
-                                 size=(event.width,event.height), width=event.width, height=event.height)
-        pygame.event.post(evt)
-        return False # continue processing
 
-    def _screen_changed_cb(self, widget, screen):
         if pygame.display.get_init():
-            self.update_display()
+            evt = pygame.event.Event(pygame.VIDEORESIZE, 
+                                    size=(event.width,event.height), width=event.width, height=event.height)
+            pygame.event.post(evt)
+            return False # continue processing
+
+    def _screen_changed_cb(self, widget, previous_screen):
+        self.update_display()
 
     def _quit_cb(self, data=None):
-        self.__stopped = True
         pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def _visibility_cb(self, widget, event):
-        if pygame.display.get_init():
-            self.update_display()
+        self.update_display()
         return False
 
     def _keydown_cb(self, widget, event):
@@ -158,15 +155,15 @@ class Translator(object):
         keycode = None
         if key in self.key_trans:
             keycode = self.key_trans[key]
-        elif hasattr(pygame, 'K_'+key.upper()):
-            keycode = getattr(pygame, 'K_'+key.upper())
-        elif hasattr(pygame, 'K_'+key.lower()):
-            keycode = getattr(pygame, 'K_'+key.lower())
+        elif hasattr(pygame, 'K_'+ key.upper()):
+            keycode = getattr(pygame, 'K_'+ key.upper())
+        elif hasattr(pygame, 'K_'+ key.lower()):
+            keycode = getattr(pygame, 'K_'+ key.lower())
         elif key == 'XF86Start':
             # view source request, specially handled...
             self._activity.view_source()
         else:
-            print ('Key %s unrecognized' % key)
+            logging.error ('Key %s unrecognized' % key)
             
         if keycode is not None:
             if type == pygame.KEYDOWN:
@@ -189,11 +186,11 @@ class Translator(object):
         return self.__button_state
 
     def _mousedown_cb(self, widget, event):
-        self.__button_state[event.button-1] = 1
+        self.__button_state[event.button - 1] = 1
         return self._mouseevent(widget, event, pygame.MOUSEBUTTONDOWN)
 
     def _mouseup_cb(self, widget, event):
-        self.__button_state[event.button-1] = 0
+        self.__button_state[event.button - 1] = 0
         return self._mouseevent(widget, event, pygame.MOUSEBUTTONUP)
         
     def _mouseevent(self, widget, event, type):
@@ -206,23 +203,22 @@ class Translator(object):
         # if this is a hint, then let's get all the necessary 
         # information, if not it's all we need.
         if event.is_hint:
-            x, y, state = event.window.get_pointer()
+           win, x, y, state = event.window.get_device_position(event.device)
         else:
             x = event.x
             y = event.y
-            state = event.state
+            state = event.get_state()
 
         rel = (x - self.__mouse_pos[0], y - self.__mouse_pos[1])
         self.__mouse_pos = (x, y)
         
         self.__button_state = [
-            state & Gdk.BUTTON1_MASK and 1 or 0,
-            state & Gdk.BUTTON2_MASK and 1 or 0,
-            state & Gdk.BUTTON3_MASK and 1 or 0,
+            state & Gdk.ModifierType.BUTTON1_MASK and 1 or 0,
+            state & Gdk.ModifierType.BUTTON2_MASK and 1 or 0,
+            state & Gdk.ModifierType.BUTTON3_MASK and 1 or 0,
         ]
         
-        evt = pygame.event.Event(pygame.MOUSEMOTION,
-                                 pos=self.__mouse_pos, rel=rel, buttons=self.__button_state)
+        evt = pygame.event.Event(pygame.MOUSEMOTION, pos=self.__mouse_pos, rel=rel, buttons=self.__button_state)
         self._post(evt)
         return True
         
@@ -252,9 +248,11 @@ class Translator(object):
     def _post(self, evt):
         try:
             pygame.event.post(evt)
-        except pygame.error as e:
-            if str(e) == 'Event queue full':
-                print ("Event queue full!")
+        except pygame.error, e:
+            if str(e) == 'video system not initialized':
+                pass
+            elif str(e) == 'Event queue full':
+                logging.error("Event queue full!")
                 pass
             else:
                 raise e
