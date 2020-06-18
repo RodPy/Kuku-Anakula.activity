@@ -53,7 +53,8 @@ class Activity(activity.Activity):
         self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
         self.set_canvas(self._pygamecanvas)
         self._pygamecanvas.run_pygame(self.game.run)
-
+        self._pygamecanvas.grab_focus()
+        
     def build_toolbar(self):
 
         toolbox = ToolbarBox()

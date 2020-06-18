@@ -56,11 +56,10 @@ class Grid(object):
     
     def get_tile(self,x,y):
         """get the tile at the grid position (x,y)
-        
         raise an IndexError if not in grid.
         """
         if self.check_bounds(x,y):
-            ind = self.dimensions[1]*x + y
+            ind = int(self.dimensions[1]*x) + int(y)
             return self.tiles[ind]
         else:
             raise IndexError
@@ -99,4 +98,3 @@ class Grid(object):
     def get_center_position(self):
         """docstring for get_center_position"""
         return self.center_position
-
