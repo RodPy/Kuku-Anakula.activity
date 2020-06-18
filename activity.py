@@ -40,12 +40,18 @@ import kuku
 class Activity(activity.Activity):
 
     def __init__(self, handle):
+        # activity.Activity.__init__(self, handle)
+        # self.game = kuku.KukuActivity()
+        # self.build_toolbar()
+        # self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
+        # self.set_canvas(self._pygamecanvas)
+        # self._pygamecanvas.grab_focus()
+        # self._pygamecanvas.run_pygame(self.game.run)
         activity.Activity.__init__(self, handle)
         self.game = kuku.KukuActivity()
         self.build_toolbar()
         self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
         self.set_canvas(self._pygamecanvas)
-        self._pygamecanvas.grab_focus()
         self._pygamecanvas.run_pygame(self.game.run)
 
     def build_toolbar(self):
