@@ -1003,8 +1003,10 @@ class KukuActivity():
             pygame.display.update(dirtyrects)
             dirtyrects = []
 
-
-if __name__ == '__main__':
+def main():
     k = KukuActivity(False)
     k.run()
+
+if __name__ == '__main__':
+    main()
 

@@ -70,10 +70,11 @@ class Translator(object):
         self._inner_evb.connect('button_press_event', self._mousedown_cb)
         self._inner_evb.connect('button_release_event', self._mouseup_cb)
         self._inner_evb.connect('motion-notify-event', self._mousemove_cb)
-        self._inner_evb.connect('draw', self._draw_cb)
+   #     self._inner_evb.connect('draw', self._draw_cb)
         self._inner_evb.connect('configure-event', self._resize_cb)
         self._inner_evb.connect('screen-changed', self._screen_changed_cb)
 
+    #    self._inner_evb.connect('screen-changed', self._screen_changed_cb)
         # Internal data
         self.__stopped = False
         self.__keystate = [0] * 323
@@ -157,9 +158,9 @@ class Translator(object):
         if key in self.key_trans:
             keycode = self.key_trans[key]
         elif hasattr(pygame, 'K_'+key.upper()):
-            keycode = getattr(pygame, 'K_'+key.upper())
+            keycode = getattr(pygame, 'K_' + key.upper())
         elif hasattr(pygame, 'K_'+key.lower()):
-            keycode = getattr(pygame, 'K_'+key.lower())
+            keycode = getattr(pygame, 'K_' + key.lower())
         elif key == 'XF86Start':
             # view source request, specially handled...
             self._mainwindow.view_source()
@@ -204,7 +205,7 @@ class Translator(object):
         # if this is a hint, then let's get all the necessary 
         # information, if not it's all we need.
         if event.is_hint:
-            win, x, y, state = event.window.get_device_position(event.device)
+            x, y, state = event.window.get_device_position(event.device)
         else:
             x = event.x
             y = event.y
