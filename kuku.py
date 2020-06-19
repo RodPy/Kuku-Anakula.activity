@@ -135,14 +135,14 @@ class State(object):
     def save(self):
         """save state object in kuku_state.obj"""
         try:
-            f = file(data_path('kuku_state.obj'), 'w')
+            f = file(data_path('kuku_state.obj'), "w")
             f.write(str(self.score) + "\n")
             f.write(str(self.lives) + "\n")
             f.write(str(self.high_score) + "\n")
             f.write(str(self.time) + "\n")
             f.close()
         except Exception as err:
-            print ('Error saving scores', err)
+            print (' Save Error saving scores', err)
 
     def update(self,lives=None,score=None,time=None):
         """update lives, score and time"""
@@ -552,6 +552,7 @@ class Lives(object):
 class KukuActivity():
 
     def __init__(self, running_sugar=True):
+
         self.running_sugar = running_sugar
         #Initialize questions - need to do lazy loading to speed up game init
         self.question_lists = []
@@ -710,14 +711,14 @@ class KukuActivity():
     def load_state(self):
         self.state = State()
         try:
-            f = file(data_path('kuku_state.obj'),'r')
+            f = open(data_path('kuku_state.obj'),'r')
             self.state.score = int(f.readline())
             self.state.lives = int(f.readline())
             self.state.high_score = int(f.readline())
             self.state.time = int(f.readline())
             f.close()
         except Exception as err:
-            print ('Cannot open kuku_state.obj', err)
+            print ('LOADCannot open kuku_state.obj', err)
 
 
     def run(self):
@@ -1003,8 +1004,17 @@ class KukuActivity():
             pygame.display.update(dirtyrects)
             dirtyrects = []
 
+# def main():
+#     pygame.init()
+#     pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+#     k = KukuActivity(False)
+#     k.run()
 
+# if __name__ == '__main__':
+#     main()
 if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_mode((0, 0), pygame.RESIZABLE)
     k = KukuActivity(False)
     k.run()
 
