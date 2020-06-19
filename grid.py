@@ -51,7 +51,7 @@ class Grid(object):
         self.step_height = self.tiles[0].height
         self.rect = pygame.Rect(0,0,0,0)
         self.rect = self.rect.unionall([t.get_rect() for t in self.tiles])
-        self.center_position = (dimensions[0]/2,dimensions[1]/2)
+        self.center_position =(int(dimensions[0]/2),int(dimensions[1]/2))
     
     
     def get_tile(self,x,y):
@@ -60,9 +60,10 @@ class Grid(object):
         """
         if self.check_bounds(x,y):
             ind = self.dimensions[1]*x + y
-            print(y)
-            print ("--")
-            print (self.dimensions[1]*x)
+            print ("X,Y tulpa:[0,1] :",x,y,self.dimensions[0],self.dimensions[1])
+            print ('CAntidad de compo tiles',len(self.tiles)) 
+            print (self.tiles) 
+            print ("FIN")
             return self.tiles[int(ind)]
         else:
             raise IndexError
