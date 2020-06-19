@@ -116,8 +116,8 @@ class Translator(object):
         pygame.mouse.get_pos = self._get_mouse_pos
 
     def update_display(self):
-        #if pygame.display.get_init():
-        pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
+        if pygame.display.get_init():
+            pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
 
     def _resize_cb(self, widget, event):
         if pygame.display.get_init():

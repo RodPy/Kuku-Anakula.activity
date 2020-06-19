@@ -552,7 +552,6 @@ class Lives(object):
 class KukuActivity():
 
     def __init__(self, running_sugar=True):
-        pygame.init()
 
         self.running_sugar = running_sugar
         #Initialize questions - need to do lazy loading to speed up game init

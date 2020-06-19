@@ -88,7 +88,7 @@ class Grid(object):
     
     def draw_tile(self,x,y,screen):
         ind = self.dimensions[1]*x + y
-        t = self.tiles[ind]
+        t = self.tiles[int(ind)]
         dirtyrects = []
         dirtyrects.extend(t.draw(screen))
         return dirtyrects
