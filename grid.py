@@ -60,10 +60,10 @@ class Grid(object):
         """
         if self.check_bounds(x,y):
             ind = self.dimensions[1]*x + y
-            print ("X,Y tulpa:[0,1] :",x,y,self.dimensions[0],self.dimensions[1])
-            print ('CAntidad de compo tiles',len(self.tiles)) 
-            print (self.tiles) 
-            print ("FIN")
+            # print ("X,Y tulpa:[0,1] :",x,y,self.dimensions[0],self.dimensions[1])
+            # print ('CAntidad de compo tiles',len(self.tiles)) 
+            # print (self.tiles) 
+            # print ("FIN")
             return self.tiles[int(ind)]
         else:
             raise IndexError
