@@ -70,10 +70,7 @@ class Grid(object):
     
     def check_bounds(self,x,y):
         """make sure grid postion (x,y) fits within the grid"""
-        if x > -1 and \
-           x < self.dimensions[0] and \
-           y > -1 and \
-           y < self.dimensions[1]:
+        if x > -1 and x < self.dimensions[0] and y > -1 and y < self.dimensions[1]:
            return True
         else:
            return False

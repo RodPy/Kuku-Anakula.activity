@@ -33,7 +33,7 @@ class _MockEvent(object):
 
 
 class Translator(object):
-    key_trans = {
+     key_trans = {
         'Alt_L': pygame.K_LALT,
         'Alt_R': pygame.K_RALT,
         'Control_L': pygame.K_LCTRL,
