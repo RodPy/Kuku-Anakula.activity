@@ -34,6 +34,7 @@ from gettext import gettext as _
 from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbutton import ToolButton
 import pygame
 import kuku
 
@@ -50,10 +51,10 @@ class Activity(activity.Activity):
         activity.Activity.__init__(self, handle)
         self.game = kuku.KukuActivity()
         self.build_toolbar()
-    #    self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
-        self._pygamecanvas = sugargame.canvas.PygameCanvas(self, main=self.game.run, modules=[pygame.display])
+        self._pygamecanvas = sugargame.canvas.PygameCanvas(self)
+    #    self._pygamecanvas = sugargame.canvas.PygameCanvas(self,main=self.game.run, modules=[pygame.display])
         self.set_canvas(self._pygamecanvas)
-    #    self._pygamecanvas.run_pygame(self.game.run)
+        self._pygamecanvas.run_pygame(self.game.run)
         self._pygamecanvas.grab_focus()
         
     def build_toolbar(self):

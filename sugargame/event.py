@@ -1,12 +1,36 @@
-from gi.repository import Gtk
+#
+# Copyright (c) 2020 Wade Brainerd
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
+import logging
+from gi.repository import GLib
 from gi.repository import Gdk
-from gi.repository import GObject
 import pygame
 import pygame.event
+
 
 class _MockEvent(object):
     def __init__(self, keyval):
         self.keyval = keyval
+
 
 class Translator(object):
     key_trans = {
@@ -18,14 +42,16 @@ class Translator(object):
         'Shift_R': pygame.K_RSHIFT,
         'Super_L': pygame.K_LSUPER,
         'Super_R': pygame.K_RSUPER,
-        'KP_Page_Up' : pygame.K_KP9, 
-        'KP_Page_Down' : pygame.K_KP3,
-        'KP_End' : pygame.K_KP1, 
-        'KP_Home' : pygame.K_KP7,
-        'KP_Up' : pygame.K_KP8,
-        'KP_Down' : pygame.K_KP2,
-        'KP_Left' : pygame.K_KP4,
-        'KP_Right' : pygame.K_KP6,
+        'KP_Page_Up': pygame.K_KP9,
+        'KP_Page_Down': pygame.K_KP3,
+        'KP_End': pygame.K_KP1,
+        'KP_Home': pygame.K_KP7,
+        'KP_Up': pygame.K_KP8,
+        'KP_Down': pygame.K_KP2,
+        'KP_Left': pygame.K_KP4,
+        'KP_Right': pygame.K_KP6,
+        'KP_Next': pygame.K_KP3,
+        'KP_Begin': pygame.K_KP5,
 
     }
 
@@ -38,48 +64,45 @@ class Translator(object):
         pygame.K_RSHIFT: pygame.KMOD_RSHIFT,
     }
 
-    def __init__(self, mainwindow, inner_evb):
+    def __init__(self, activity, inner_evb):
         """Initialise the Translator with the windows to which to listen"""
-        self._mainwindow = mainwindow
+        self._activity = activity
         self._inner_evb = inner_evb
 
         # Enable events
         # (add instead of set here because the main window is already realized)
-        self._mainwindow.add_events(
-            Gdk.EventMask.KEY_PRESS_MASK | 
-            Gdk.EventMask.KEY_RELEASE_MASK | 
+        self._activity.add_events(
+            Gdk.EventMask.KEY_PRESS_MASK |
+            Gdk.EventMask.KEY_RELEASE_MASK |
             Gdk.EventMask.VISIBILITY_NOTIFY_MASK
         )
 
         self._inner_evb.set_events(
-            Gdk.EventMask.POINTER_MOTION_MASK | 
-            Gdk.EventMask.POINTER_MOTION_HINT_MASK | 
-            Gdk.EventMask.BUTTON_MOTION_MASK | 
-            Gdk.EventMask.BUTTON_PRESS_MASK | 
+            Gdk.EventMask.POINTER_MOTION_MASK |
+            Gdk.EventMask.POINTER_MOTION_HINT_MASK |
+            Gdk.EventMask.BUTTON_MOTION_MASK |
+            Gdk.EventMask.BUTTON_PRESS_MASK |
             Gdk.EventMask.BUTTON_RELEASE_MASK
         )
 
-        self._mainwindow.set_can_focus(True)
+        self._activity.set_can_focus(True)
         self._inner_evb.set_can_focus(True)
 
         # Callback functions to link the event systems
-        self._mainwindow.connect('unrealize', self._quit_cb)
-        self._mainwindow.connect('visibility_notify_event', self._visibility_cb)
-        self._inner_evb.connect('key_press_event', self._keydown_cb)
-        self._inner_evb.connect('key_release_event', self._keyup_cb)
-        self._inner_evb.connect('button_press_event', self._mousedown_cb)
-        self._inner_evb.connect('button_release_event', self._mouseup_cb)
+        self._activity.connect('unrealize', self._quit_cb)
+        self._activity.connect('visibility-notify-event', self._visibility_cb)
+        self._activity.connect('configure-event', self._resize_cb)
+        self._inner_evb.connect('key-press-event', self._keydown_cb)
+        self._inner_evb.connect('key-release-event', self._keyup_cb)
+        self._inner_evb.connect('button-press-event', self._mousedown_cb)
+        self._inner_evb.connect('button-release-event', self._mouseup_cb)
         self._inner_evb.connect('motion-notify-event', self._mousemove_cb)
-   #     self._inner_evb.connect('draw', self._draw_cb)
-        self._inner_evb.connect('configure-event', self._resize_cb)
         self._inner_evb.connect('screen-changed', self._screen_changed_cb)
 
-    #    self._inner_evb.connect('screen-changed', self._screen_changed_cb)
         # Internal data
-        self.__stopped = False
         self.__keystate = [0] * 323
-        self.__button_state = [0,0,0]
-        self.__mouse_pos = (0,0)
+        self.__button_state = [0, 0, 0]
+        self.__mouse_pos = (0, 0)
         self.__repeat = (None, None)
         self.__held = set()
         self.__held_time_left = {}
@@ -93,30 +116,25 @@ class Translator(object):
         pygame.mouse.get_pos = self._get_mouse_pos
 
     def update_display(self):
+        #if pygame.display.get_init():
         pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
 
-    def _draw_cb(self, widget, event):
-        if pygame.display.get_init():
-            pygame.event.post(pygame.event.Event(pygame.VIDEOEXPOSE))
-        return True
-
     def _resize_cb(self, widget, event):
-        evt = pygame.event.Event(pygame.VIDEORESIZE, 
-                                 size=(event.width,event.height), width=event.width, height=event.height)
-        pygame.event.post(evt)
-        return False # continue processing
+        if pygame.display.get_init():
+            evt = pygame.event.Event(pygame.VIDEORESIZE,
+                                     size=(event.width, event.height),
+                                     width=event.width, height=event.height)
+            pygame.event.post(evt)
+        return False  # continue processing
 
     def _screen_changed_cb(self, widget, previous_screen):
-        if pygame.display.get_init():
-            self.update_display()
+        self.update_display()
 
     def _quit_cb(self, data=None):
-        self.__stopped = True
         pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     def _visibility_cb(self, widget, event):
-        if pygame.display.get_init():
-            self.update_display()
+        self.update_display()
         return False
 
     def _keydown_cb(self, widget, event):
@@ -135,7 +153,8 @@ class Translator(object):
         key = event.keyval
         if self.__repeat[0] is not None:
             if key in self.__held:
-                # This is possibly false if set_repeat() is called with a key held
+                # This is possibly false if set_repeat()
+                # is called with a key held
                 del self.__held_time_left[key]
                 del self.__held_last_time[key]
         self.__held.discard(key)
@@ -144,7 +163,7 @@ class Translator(object):
 
     def _keymods(self):
         mod = 0
-        for key_val, mod_val in self.mod_map.iteritems():
+        for key_val, mod_val in self.mod_map.items():
             mod |= self.__keystate[key_val] and mod_val
         return mod
 
@@ -152,20 +171,20 @@ class Translator(object):
         key = Gdk.keyval_name(event.keyval)
         if key is None:
             # No idea what this key is.
-            return False 
+            return False
 
         keycode = None
         if key in self.key_trans:
             keycode = self.key_trans[key]
-        elif hasattr(pygame, 'K_'+key.upper()):
+        elif hasattr(pygame, 'K_' + key.upper()):
             keycode = getattr(pygame, 'K_' + key.upper())
-        elif hasattr(pygame, 'K_'+key.lower()):
+        elif hasattr(pygame, 'K_' + key.lower()):
             keycode = getattr(pygame, 'K_' + key.lower())
         elif key == 'XF86Start':
             # view source request, specially handled...
-            self._mainwindow.view_source()
+            self._activity.view_source()
         else:
-            print ('Key %s unrecognized' % key)
+            logging.error('Key %s unrecognized' % key)
 
         if keycode is not None:
             if type == pygame.KEYDOWN:
@@ -173,7 +192,7 @@ class Translator(object):
             self.__keystate[keycode] = type == pygame.KEYDOWN
             if type == pygame.KEYUP:
                 mod = self._keymods()
-            ukey = unichr(Gdk.keyval_to_unicode(event.keyval))
+            ukey = chr(Gdk.keyval_to_unicode(event.keyval))
             if ukey == '\000':
                 ukey = ''
             evt = pygame.event.Event(type, key=keycode, unicode=ukey, mod=mod)
@@ -188,24 +207,25 @@ class Translator(object):
         return self.__button_state
 
     def _mousedown_cb(self, widget, event):
-        self.__button_state[event.button-1] = 1
+        self.__button_state[event.button - 1] = 1
         return self._mouseevent(widget, event, pygame.MOUSEBUTTONDOWN)
 
     def _mouseup_cb(self, widget, event):
-        self.__button_state[event.button-1] = 0
+        self.__button_state[event.button - 1] = 0
         return self._mouseevent(widget, event, pygame.MOUSEBUTTONUP)
 
     def _mouseevent(self, widget, event, type):
-        evt = pygame.event.Event(type, button=event.button, pos=(event.x, event.y))
+        evt = pygame.event.Event(type, button=event.button, pos=(event.x,
+                                                                 event.y))
         self._post(evt)
         return True
 
     def _mousemove_cb(self, widget, event):
         # From http://www.learningpython.com/2006/07/25/writing-a-custom-widget-using-pygtk/
-        # if this is a hint, then let's get all the necessary 
+        # if this is a hint, then let's get all the necessary
         # information, if not it's all we need.
         if event.is_hint:
-            x, y, state = event.window.get_device_position(event.device)
+            win, x, y, state = event.window.get_device_position(event.device)
         else:
             x = event.x
             y = event.y
@@ -221,14 +241,15 @@ class Translator(object):
         ]
 
         evt = pygame.event.Event(pygame.MOUSEMOTION,
-                                 pos=self.__mouse_pos, rel=rel, buttons=self.__button_state)
+                                 pos=self.__mouse_pos, rel=rel,
+                                 buttons=self.__button_state)
         self._post(evt)
         return True
 
     def _tick_cb(self):
         cur_time = pygame.time.get_ticks()
         for key in self.__held:
-            delta = cur_time - self.__held_last_time[key] 
+            delta = cur_time - self.__held_last_time[key]
             self.__held_last_time[key] = cur_time
 
             self.__held_time_left[key] -= delta
@@ -240,9 +261,9 @@ class Translator(object):
 
     def _set_repeat(self, delay=None, interval=None):
         if delay is not None and self.__repeat[0] is None:
-            self.__tick_id = GObject.timeout_add(10, self._tick_cb)
+            self.__tick_id = GLib.timeout_add(10, self._tick_cb)
         elif delay is None and self.__repeat[0] is not None:
-            GObject.source_remove(self.__tick_id)
+            GLib.source_remove(self.__tick_id)
         self.__repeat = (delay, interval)
 
     def _get_mouse_pos(self):
@@ -252,8 +273,10 @@ class Translator(object):
         try:
             pygame.event.post(evt)
         except pygame.error as e:
-            if str(e) == 'Event queue full':
-                print ("Event queue full!")
+            if str(e) == 'video system not initialized':
+                pass
+            elif str(e) == 'Event queue full':
+                logging.error("Event queue full!")
                 pass
             else:
                 raise e

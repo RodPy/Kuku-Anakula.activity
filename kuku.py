@@ -552,6 +552,8 @@ class Lives(object):
 class KukuActivity():
 
     def __init__(self, running_sugar=True):
+        pygame.init()
+
         self.running_sugar = running_sugar
         #Initialize questions - need to do lazy loading to speed up game init
         self.question_lists = []
@@ -1003,10 +1005,17 @@ class KukuActivity():
             pygame.display.update(dirtyrects)
             dirtyrects = []
 
-def main():
+# def main():
+#     pygame.init()
+#     pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+#     k = KukuActivity(False)
+#     k.run()
+
+# if __name__ == '__main__':
+#     main()
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_mode((0, 0), pygame.RESIZABLE)
     k = KukuActivity(False)
     k.run()
-
-if __name__ == '__main__':
-    main()
 

@@ -59,8 +59,11 @@ class Grid(object):
         raise an IndexError if not in grid.
         """
         if self.check_bounds(x,y):
-            ind = int(self.dimensions[1]*x) + int(y)
-            return self.tiles[ind]
+            ind = self.dimensions[1]*x + y
+            print(y)
+            print ("--")
+            print (self.dimensions[1]*x)
+            return self.tiles[int(ind)]
         else:
             raise IndexError
     
